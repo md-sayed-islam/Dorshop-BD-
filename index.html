@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Dorshop BD - 2026 LIVE Collection</title>
+<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRvcnNob3AgQkQgLSAyMDI2IENvbGxlY3Rpb24iLAogICJzaG9ydF9uYW1lIjogIkRvcnNob3AgQkQiLAogICJkZXNjcmlwdGlvbiI6ICJEb3JzaG9wIEJEIDIwMjYgLSBCZXN0IENsb3RoaW5nIENvbGxlY3Rpb24gaW4gQmFuZ2xhZGVzaCIsCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjZjg1NjA2IiwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaWJiLmNvL05kUDZiUjBaL0RvcnNob3AtMjAyNjA3MzAtMTgwMTE5LTAwMDAucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9LAogICAgewogICAgICAic3JjIjogImh0dHBzOi8vaS5pYmIuY28vTmRQNmJSMFovRG9yc2hvcC0yMDI2MDczMC0xODAxMTktMDAwMC5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0=">
+<meta name="theme-color" content="#f85606">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-[#f5f5f5] min-h-screen">
+
+<div id="notifyBanner" class="hidden bg-[#111] text-white text-center py-2.5 px-3 text-[12px] font-bold sticky top-0 z-[60] flex items-center justify-center gap-2">
+<span>🔔</span><span id="notifyText">Dorshop BD te notun product eseche!</span><button onclick="location.reload()" class="bg-[#f85606] text-white px-3 py-1 rounded-full ml-2 text-[11px]">Refresh</button><button onclick="document.getElementById('notifyBanner').classList.add('hidden')" class="ml-2 text-gray-400">✕</button>
+</div>
+
+<div class="bg-white sticky top-0 z-40 shadow-sm">
+<div class="max-w-[1280px] mx-auto px-3 py-3 flex items-center gap-3">
+<img src="https://i.ibb.co/NdP6bR0Z/Dorshop-20260730-180119-0000.png" alt="Dorshop BD" class="h-[42px] w-auto object-contain rounded">
+<div class="flex-1 relative">
+<input id="searchInput" placeholder="Search or type dorshopbd786 / dorshopbd" class="w-full bg-gray-100 rounded-[6px] px-4 py-2.5 text-[14px] outline-none border">
+</div>
+<button id="installBtn" onclick="installAPK()" class="hidden bg-black text-white px-3 py-1.5 rounded-full text-[11px]">📥 Install</button>
+<div id="syncBadge" class="text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700">🔥 LIVE Firebase</div>
+</div>
+<div class="bg-[#fff7ed] text-[11px] text-orange-700 px-3 py-1.5 text-center flex justify-between">
+<span>2026 LIVE! Admin: <b>dorshopbd786</b> | Reseller: <b>dorshopbd</b> | WhatsApp: 01846729152</span>
+<span id="liveCount" class="bg-green-600 text-white px-2 py-0.5 rounded-full">0 Live</span>
+</div>
+</div>
+
+<div class="max-w-[1280px] mx-auto p-3 mt-3">
+<div class="bg-white rounded-lg p-2 flex gap-2 overflow-auto border">
+<button onclick="filterCategory('All')" class="cat-btn active bg-[#f85606] text-white px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap" data-cat="All">All</button>
+<button onclick="filterCategory('Panjabi Combo')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Panjabi Combo">Panjabi Combo</button>
+<button onclick="filterCategory('Shirt Combo')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Shirt Combo">Shirt Combo</button>
+<button onclick="filterCategory('Panjabi')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Panjabi">Panjabi</button>
+<button onclick="filterCategory('Shirt')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Shirt">Shirt</button>
+<button onclick="filterCategory('Women Shop')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Women Shop">Women Shop</button>
+<button onclick="filterCategory('Mens Shop')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Mens Shop">Mens Shop</button>
+<button onclick="filterCategory('Baby Shop')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Baby Shop">Baby Shop</button>
+<button onclick="filterCategory('Electric Gadget')" class="cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap" data-cat="Electric Gadget">Gadget</button>
+</div>
+</div>
+
+<div class="max-w-[1280px] mx-auto p-3 grid grid-cols-2 md:grid-cols-4 gap-3 mt-2" id="productGrid"></div>
+<div id="loadMoreWrap" class="text-center py-4"></div>
+
+<!-- Admin Panel -->
+<div id="adminPanel" class="fixed inset-0 bg-white z-[100] overflow-auto hidden">
+<div class="bg-[#111] text-white p-4 flex justify-between items-center">
+<div><b>Admin Panel - Dorshop BD 2026 LIVE</b><br><span class="text-[11px] text-gray-400">Firebase Connected ✅ | Logo + Bulk 700+</span></div>
+<button onclick="closeAdmin()" class="bg-white text-black px-3 py-1 rounded text-sm">Close ✕</button>
+</div>
+<div class="max-w-[900px] mx-auto p-4">
+<div class="grid grid-cols-3 gap-3 mb-5">
+<div class="bg-orange-50 border p-3 rounded-lg"><div class="text-[11px] text-gray-500">Total Products</div><div id="statProducts" class="text-[20px] font-bold">0</div></div>
+<div class="bg-blue-50 border p-3 rounded-lg"><div class="text-[11px] text-gray-500">Pending Orders</div><div id="statOrders" class="text-[20px] font-bold">0</div></div>
+<div class="bg-green-50 border p-3 rounded-lg"><div class="text-[11px] text-gray-500">Sales</div><div id="statSales" class="text-[20px] font-bold">0৳</div></div>
+</div>
+
+<div class="bg-[#f85606] text-white rounded-xl p-4 mb-4">
+<h3 class="font-bold text-[14px]">🔔 Notify - Firebase LIVE, 100% FREE No Block</h3>
+<p class="text-[11px] mt-1 opacity-90">Product add korle sob user er phone e auto banner asbe</p>
+<div class="grid grid-cols-2 gap-2 mt-3">
+<input id="notifyMsg" placeholder="Notun collection eseche!" class="p-2 rounded text-black text-[12px]" value="Dorshop BD te notun collection eseche!">
+<button onclick="notifyAllUsers()" class="bg-black text-white py-2 rounded font-bold text-sm">📢 Notify All Users</button>
+<button onclick="testNotify()" class="bg-yellow-400 text-black py-2 rounded font-bold text-sm">🧪 Test</button>
+</div>
+<div id="notifyStatus" class="text-[11px] mt-2"></div>
+</div>
+
+<div class="flex gap-2 mb-4 border-b overflow-auto">
+<button onclick="switchTab('products')" id="tabBtn-products" class="px-4 py-2 border-b-2 border-[#f85606] font-semibold text-sm">📦 Products + Bulk 700+</button>
+<button onclick="switchTab('orders')" id="tabBtn-orders" class="px-4 py-2 text-sm text-gray-500">🛒 Orders</button>
+</div>
+
+<div id="tab-products">
+<div class="bg-gradient-to-r from-orange-50 to-yellow-50 border-2 border-dashed border-orange-300 rounded-xl p-4 mb-6">
+<h3 class="font-extrabold text-[16px] text-[#f85606] mb-2">🚀 700+ Bulk Import (Firebase LIVE)</h3>
+<textarea id="bulkText" placeholder="Name, Price, Category, Image&#10;Cotton Dress, 940, Women Shop, https://..." class="w-full p-2.5 border rounded text-[11px] h-28"></textarea>
+<div class="grid grid-cols-2 gap-2 mt-2">
+<button onclick="importBulk()" class="bg-[#f85606] text-white py-2.5 rounded font-bold text-sm">⚡ Bulk Import to Firebase</button>
+<button onclick="clearAllProducts()" class="bg-red-50 text-red-600 border py-2.5 rounded font-bold text-sm">🗑️ Delete All</button>
+</div>
+<div id="bulkStatus" class="text-[12px] mt-2 text-green-700"></div>
+</div>
+
+<h3 class="font-bold mb-3">➕ Single Add (Firebase LIVE)</h3>
+<div class="bg-gray-50 p-4 rounded-lg grid gap-3 mb-6 border">
+<input id="pName" placeholder="Product Name" class="p-2.5 border rounded text-sm">
+<div class="grid grid-cols-2 gap-2">
+<input id="pPrice" type="number" placeholder="Price: 940" class="p-2.5 border rounded text-sm">
+<select id="pCategory" class="p-2.5 border rounded text-sm">
+<option>Panjabi Combo</option><option>Shirt Combo</option><option>Panjabi</option><option>Shirt</option><option>Women Shop</option><option>Mens Shop</option><option>Baby Shop</option><option>Electric Gadget</option>
+</select>
+</div>
+<input id="pImage" placeholder="Photo Link: https://i.ibb.co/..." class="p-2.5 border rounded text-sm">
+<textarea id="pDesc" placeholder="Description" class="p-2.5 border rounded text-sm h-20"></textarea>
+<button onclick="addProduct()" class="bg-[#f85606] text-white py-3 rounded font-bold">✅ Add to Firebase LIVE</button>
+</div>
+<h3 class="font-bold mb-2">Existing Products (<span id="productCountText">0</span>)</h3>
+<div id="adminProductList" class="space-y-2"></div>
+</div>
+<div id="tab-orders" class="hidden">
+<h3 class="font-bold mb-3">📋 Orders - Firebase LIVE</h3>
+<div id="adminOrderList" class="space-y-3"></div>
+</div>
+</div>
+</div>
+
+<!-- Reseller -->
+<div id="resellerPanel" class="fixed inset-0 bg-white z-[100] overflow-auto hidden">
+<div class="bg-[#00C7B7] text-white p-4 flex justify-between items-center">
+<div><b>Reseller Panel</b><br><span class="text-[11px] opacity-80">Profit 100৳ per product</span></div>
+<button onclick="closeReseller()" class="bg-white text-black px-3 py-1 rounded text-sm">Close ✕</button>
+</div>
+<div class="max-w-[900px] mx-auto p-4" id="resellerContent"></div>
+</div>
+
+<!-- Order Modal -->
+<div id="orderModal" class="fixed inset-0 bg-black/60 z-[90] hidden flex items-center justify-center p-4">
+<div class="bg-white rounded-xl w-full max-w-[420px] overflow-hidden">
+<div class="p-4 border-b flex justify-between items-center bg-gray-50"><b id="modalProductName"></b><button onclick="closeOrder()" class="w-8 h-8 bg-gray-200 rounded-full">✕</button></div>
+<div class="p-4 space-y-3">
+<input id="cName" placeholder="Apnar Nam *" class="w-full p-2.5 border rounded text-sm">
+<input id="cPhone" placeholder="Phone Number *" class="w-full p-2.5 border rounded text-sm">
+<textarea id="cAddr" placeholder="Full Address *" class="w-full p-2.5 border rounded text-sm"></textarea>
+<div class="flex gap-2">
+<select id="cSize" class="flex-1 p-2.5 border rounded text-sm"><option>M</option><option>L</option><option>XL</option><option>XXL</option></select>
+<input id="cQty" type="number" value="1" min="1" class="w-20 p-2.5 border rounded text-sm">
+</div>
+<div class="flex gap-2 text-[13px] bg-gray-50 p-2 rounded">
+<label class="flex-1 flex items-center gap-1"><input type="radio" name="del" value="80" checked> Inside 80৳</label>
+<label class="flex-1 flex items-center gap-1"><input type="radio" name="del" value="120"> Outside 120৳</label>
+</div>
+<div class="bg-orange-50 border p-3 rounded text-sm">Total: <b id="totalPrice" class="text-[#f85606]">0৳</b></div>
+<div class="grid grid-cols-2 gap-2">
+<button onclick="submitOrder()" class="bg-[#f85606] text-white py-3 rounded font-bold text-sm">🛒 Confirm</button>
+<button onclick="submitWhatsApp()" class="bg-[#25D366] text-white py-3 rounded font-bold text-sm">💬 WhatsApp</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="loginModal" class="fixed inset-0 bg-black/60 z-[95] hidden flex items-center justify-center p-4">
+<div class="bg-white rounded-xl w-full max-w-[340px] p-6 text-center">
+<h3 id="loginTitle" class="font-bold mb-3"></h3>
+<input id="loginPass" type="password" placeholder="Password" class="w-full p-2.5 border rounded mb-3 text-sm">
+<button onclick="doLogin()" class="w-full bg-black text-white py-2.5 rounded font-bold">Login</button>
+<button onclick="closeLogin()" class="mt-3 text-sm text-gray-500">Cancel</button>
+<div id="loginError" class="text-red-600 text-[12px] mt-2 hidden">Wrong password!</div>
+</div>
+</div>
+
+<script>
+// Firebase Config - Dorshop BD LIVE
+const firebaseConfig = {
+  apiKey: "AIzaSyBpb9S_JmFp9Fo5QdiZXp3oWeY7hoPa-7A",
+  authDomain: "dorshop-bd-5f7ff.firebaseapp.com",
+  projectId: "dorshop-bd-5f7ff",
+  storageBucket: "dorshop-bd-5f7ff.firebasestorage.app",
+  messagingSenderId: "319169556953",
+  appId: "1:319169556953:web:2047e8192694e7fb9169c8",
+  measurementId: "G-THDLVE8NNQ"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+const WHATSAPP_NUMBER="8801846729152";
+let products=[], orders=[], currentProduct=null, loginType="", currentCategory="All", frontendPage=1;
+const PAGE_SIZE=20;
+
+const defaultProducts=[
+{name:"Cotton Dress 3Pcs",price:940,category:"Women Shop",image:"https://i.ibb.co/1Jt6J4yP/dress.jpg",sizes:["M","L","XL"],description:"Premium cotton"},
+{name:"Panjabi Combo Premium",price:1250,category:"Panjabi Combo",image:"https://i.ibb.co/NdP6bR0Z/Dorshop-20260730-180119-0000.png",sizes:["M","L","XL"],description:"Combo offer"}
+];
+
+function saveLocal(){localStorage.setItem("dorshop_products",JSON.stringify(products));localStorage.setItem("dorshop_orders",JSON.stringify(orders));}
+
+// Firebase LIVE Sync
+db.collection("products").onSnapshot(snap=>{
+  products = snap.docs.map(d=>({id:d.id,...d.data()}));
+  if(products.length===0){
+    // first time - add defaults
+    defaultProducts.forEach(p=>db.collection("products").add({...p,createdAt:Date.now()}));
+  }
+  renderProducts();
+  renderAdminProducts();
+  document.getElementById("liveCount").innerText=products.length+" LIVE";
+  document.getElementById("statProducts").innerText=products.length;
+  document.getElementById("productCountText").innerText=products.length;
+});
+
+db.collection("orders").orderBy("createdAt","desc").onSnapshot(snap=>{
+  orders = snap.docs.map(d=>({id:d.id,...d.data()}));
+  renderAdminOrders();
+  document.getElementById("statOrders").innerText=orders.filter(o=>o.status==="Pending").length;
+  document.getElementById("statSales").innerText=orders.filter(o=>o.status==="Confirmed").reduce((s,o)=>s+(o.total||0),0)+"৳";
+});
+
+db.collection("notifications").orderBy("createdAt","desc").limit(1).onSnapshot(snap=>{
+  if(!snap.empty){
+    const n=snap.docs[0].data();
+    const lastSeen=localStorage.getItem("last_notify")||0;
+    if(n.createdAt>lastSeen){
+      document.getElementById("notifyText").innerText=n.message;
+      document.getElementById("notifyBanner").classList.remove("hidden");
+    }
+  }
+});
+
+function renderProducts(list){
+  const filtered = list || (currentCategory==="All"?products:products.filter(p=>p.category===currentCategory));
+  const toShow = filtered.slice(0, frontendPage*PAGE_SIZE);
+  document.getElementById("productGrid").innerHTML = toShow.map(p=>`
+  <div class="bg-white rounded-lg overflow-hidden shadow-sm border">
+    <img src="${p.image}" class="w-full h-[180px] object-cover" onerror="this.src='https://via.placeholder.com/300'">
+    <div class="p-2.5">
+      <div class="text-[12px] font-bold line-clamp-2 h-[32px]">${p.name}</div>
+      <div class="flex justify-between items-center mt-2">
+        <b class="text-[#f85606]">${p.price}৳</b>
+        <span class="text-[10px] bg-black text-white px-1.5 py-0.5 rounded">${p.category}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-1 mt-2">
+        <button onclick="openOrder('${p.id}')" class="bg-[#f85606] text-white py-1.5 rounded text-[11px] font-bold">Order</button>
+        <button onclick="orderWhatsAppDirect('${p.id}')" class="bg-[#25D366] text-white py-1.5 rounded text-[11px]">WhatsApp</button>
+      </div>
+    </div>
+  </div>`).join('');
+  document.getElementById("loadMoreWrap").innerHTML = filtered.length>toShow.length?`<button onclick="frontendPage++;renderProducts()" class="bg-white border px-4 py-2 rounded-full text-sm">Load More ${filtered.length-toShow.length}</button>`:"";
+}
+
+function filterCategory(cat){
+  currentCategory=cat; frontendPage=1;
+  document.querySelectorAll(".cat-btn").forEach(b=>b.className=b.dataset.cat===cat?"cat-btn active bg-[#f85606] text-white px-4 py-2 rounded-full text-[13px] font-semibold whitespace-nowrap":"cat-btn bg-gray-100 px-4 py-2 rounded-full text-[13px] whitespace-nowrap");
+  renderProducts();
+}
+
+function openOrder(id){
+  const p=products.find(x=>String(x.id)===String(id)); if(!p) return;
+  currentProduct=p;
+  document.getElementById("modalProductName").innerText=p.name+" - "+p.price+"৳";
+  document.getElementById("cSize").innerHTML=(p.sizes||["M","L","XL"]).map(s=>`<option>${s}</option>`).join('');
+  document.getElementById("orderModal").classList.remove("hidden");
+  updateTotal();
+}
+function closeOrder(){document.getElementById("orderModal").classList.add("hidden");}
+function updateTotal(){
+  if(!currentProduct) return;
+  const qty=parseInt(document.getElementById("cQty").value)||1;
+  const del=parseInt(document.querySelector('input[name="del"]:checked')?.value||80);
+  document.getElementById("totalPrice").innerText=(currentProduct.price*qty+del)+"৳";
+}
+document.getElementById("cQty")?.addEventListener("input",updateTotal);
+document.querySelectorAll('input[name="del"]').forEach(r=>r.addEventListener("change",updateTotal));
+
+async function submitOrder(){
+  const name=document.getElementById("cName").value.trim();
+  const phone=document.getElementById("cPhone").value.trim();
+  const addr=document.getElementById("cAddr").value.trim();
+  const size=document.getElementById("cSize").value;
+  const qty=parseInt(document.getElementById("cQty").value)||1;
+  const del=parseInt(document.querySelector('input[name="del"]:checked').value);
+  if(!name||!phone||!addr){alert("Name Phone Address lagbe");return;}
+  const total=currentProduct.price*qty+del;
+  await db.collection("orders").add({
+    product:currentProduct.name, productId:currentProduct.id, customerName:name, phone, address:addr,
+    size, qty, delivery:del, total, status:"Pending", type:"Customer", date:new Date().toLocaleDateString(), createdAt:Date.now()
+  });
+  closeOrder(); alert("✅ Order Confirmed! Firebase e save hoyeche!");
+}
+function submitWhatsApp(){
+  const name=document.getElementById("cName").value; const phone=document.getElementById("cPhone").value; const addr=document.getElementById("cAddr").value;
+  const msg=`Dorshop BD Order\nProduct: ${currentProduct.name}\nName: ${name}\nPhone: ${phone}\nAddr: ${addr}`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`,'_blank');
+}
+function orderWhatsAppDirect(id){
+  const p=products.find(x=>String(x.id)===String(id));
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent("Hello Dorshop BD, "+p.name+" Price "+p.price+"Tk order korte chai")}`,'_blank');
+}
+
+// Search + Login
+document.getElementById('searchInput').addEventListener('input',(e)=>{
+  const v=e.target.value.trim();
+  if(v==='dorshopbd786'){loginType='admin';showLogin('Admin Login');}
+  else if(v==='dorshopbd'){loginType='reseller';showLogin('Reseller Login');}
+  else{const f=products.filter(p=>p.name.toLowerCase().includes(v.toLowerCase())); frontendPage=1; renderProducts(f);}
+});
+function showLogin(t){document.getElementById('loginTitle').innerText=t;document.getElementById('loginModal').classList.remove('hidden');}
+function closeLogin(){document.getElementById('loginModal').classList.add('hidden');document.getElementById('loginPass').value='';}
+function doLogin(){
+  const pass=document.getElementById('loginPass').value;
+  if(loginType==='admin'&&pass==='dorshopbd2024'){closeLogin();openAdmin();}
+  else if(loginType==='reseller'&&pass==='resell1234'){closeLogin();openReseller();}
+  else{document.getElementById('loginError').classList.remove('hidden');}
+}
+function openAdmin(){document.getElementById('adminPanel').classList.remove('hidden');}
+function closeAdmin(){document.getElementById('adminPanel').classList.add('hidden');}
+function openReseller(){
+  document.getElementById('resellerContent').innerHTML=products.map(p=>`<div class="border p-3 rounded flex gap-3 mb-2 bg-white"><img src="${p.image}" class="w-20 h-20 rounded"><div class="flex-1"><b>${p.name}</b><div class="text-sm">Customer: ${p.price}৳ | Reseller: ${p.price-100}৳</div><button onclick="openOrder('${p.id}');closeReseller()" class="mt-2 bg-[#00C7B7] text-white px-3 py-1.5
