@@ -1,1 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>Dorshop BD v16 Firebase REAL LIVE - dorshop-bd-5f7ff</title>
+<link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogIkRvcnNob3AgQkQgLSAyMDI2IENvbGxlY3Rpb24iLAogICJzaG9ydF9uYW1lIjogIkRvcnNob3AgQkQiLAogICJkZXNjcmlwdGlvbiI6ICJEb3JzaG9wIEJEIDIwMjYgLSBCZXN0IENsb3RoaW5nIENvbGxlY3Rpb24gaW4gQmFuZ2xhZGVzaCIsCiAgInN0YXJ0X3VybCI6ICIuL2luZGV4Lmh0bWwiLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiNmZmZmZmYiLAogICJ0aGVtZV9jb2xvciI6ICIjZjg1NjA2IiwKICAib3JpZW50YXRpb24iOiAicG9ydHJhaXQiLAogICJpY29ucyI6IFsKICAgIHsKICAgICAgInNyYyI6ICJodHRwczovL2kuaWJiLmNvL05kUDZiUjBaL0RvcnNob3AtMjAyNjA3MzAtMTgwMTE5LTAwMDAucG5nIiwKICAgICAgInNpemVzIjogIjE5MngxOTIiLAogICAgICAidHlwZSI6ICJpbWFnZS9wbmciLAogICAgICAicHVycG9zZSI6ICJhbnkgbWFza2FibGUiCiAgICB9LAogICAgewogICAgICAic3JjIjogImh0dHBzOi8vaS5pYmIuY28vTmRQNmJSMFovRG9yc2hvcC0yMDI2MDczMC0xODAxMTktMDAwMC5wbmciLAogICAgICAic2l6ZXMiOiAiNTEyeDUxMiIsCiAgICAgICJ0eXBlIjogImltYWdlL3BuZyIsCiAgICAgICJwdXJwb3NlIjogImFueSBtYXNrYWJsZSIKICAgIH0KICBdCn0=">
+<meta name="theme-color" content="#f85606">
+<script src="https://cdn.tailwindcss.com"></script>
 
+<!-- ðŸ”¥ Firebase REAL LIVE - dorshop-bd-5f7ff -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, onValue, set, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-analytics.js";
+
+// Your web app's Firebase configuration - REAL from your screenshot
+const firebaseConfig = {
+  apiKey: "AIzaSyBpb9S_JmFp9Fo5QdiZXp3oWeY7hoPa-7A",
+  authDomain: "dorshop-bd-5f7ff.firebaseapp.com",
+  databaseURL: "https://dorshop-bd-5f7ff-default-rtdb.firebaseio.com",
+  projectId: "dorshop-bd-5f7ff",
+  storageBucket: "dorshop-bd-5f7ff.firebasestorage.app",
+  messagingSenderId: "319169556953",
+  appId: "1:319169556953:web:2047e8192694e7fb9169c8",
+  measurementId: "G-THDLVE8NNQ"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+try { getAnalytics(app); } catch(e){}
+const db = getDatabase(app);
+
+window.db = db;
+window.fb = { ref, onValue, set, remove, update };
+
+console.log("ðŸ”¥ Firebase REAL LIVE Connected! Project: dorshop-bd-5f7ff");
+
+// REAL-TIME PRODUCTS
+const productsRef = ref(db, 'dorshopbd/products');
+onValue(productsRef, (snap)=>{
+  const data = snap.val();
+  if(data){
+    products = Object.values(data);
+    renderProducts();
+    renderAdminProducts();
+    document.getElementById('liveBadge').classList.remove('hidden');
+    console.log("LIVE Products:", products.length);
+  } else {
+    // First time - push default products
+    console.log("No products in Firebase - using defaults");
+    renderProducts();
+  }
+});
+
+// REAL-TIME ORDERS
+const ordersRef = ref(db, 'dorshopbd/orders');
+onValue(ordersRef, (snap)=>{
+  const data = snap.val();
+  if(data){
+    orders = Object.values(data);
+    renderAdminOrders();
+    const el = document.getElementById('resellerOrders');
+    if(typeof renderResellerOrders==='function') renderResellerOrders();
+    const ro = orders.filter(o=>o.type==='Reseller');
+    if(el) el.innerHTML = ro.length ? ro.map(o=>`<div class="border p-2 rounded text-sm mb-2">${o.product} - ${o.total}à§³ - ${o.status}</div>`).join('') : 'No reseller orders';
+  }
+});
+</script>
+</head>
+<body class="bg-[#f5f5f5] min-h-screen">
+<div class="bg-white sticky top-0 z-40 shadow-sm">
+<div class="max-w-[1280px] mx-auto px-3 py-3 flex items-center gap-3">
+<div class="flex items-center gap-2">
+<div class="text-[#f85606] font-extrabold text-[22px]">Dorshop BD</div>
+<span id="liveBadge" class="hidden bg-green-500 text-white text-[9px] px-2 py-0.5 rounded-full animate-pulse">ðŸ”´ LIVE</span>
+<span class="bg-orange-100 text-orange-700 text-[9px] px-2 py-0.5 rounded-full">v16 REAL</span>
+</div>
+<div class="flex-1 relative">
+<input id="searchInput" placeholder="Search or type dorshopbd786 / dorshopbd" class="w-full bg-gray-100 rounded-[6px] px-4 py-2.5 text-[14px] outline-none border">
+</div>
+</div>
+<div class="bg-[#fff7ed] text-[11px] text-orange-700 px-3 py-1.5 text-center">ðŸ”¥ Firebase REAL LIVE - dorshop-bd-5f7ff - Admin: <b>dorshopbd786</b> | Reseller: <b>dorshopbd</b> | 1 sec e live update!</div>
+</div>
+<div class="max-w-[1280px] mx-auto p-3 grid grid-cols-2 md:grid-cols-4 gap-3 mt-2" id="productGrid"></div>
+
+<div id="adminPanel" class="fixed inset-0 bg-white z-[100] overflow-auto hidden">
+<div class="bg-[#111] text-white p-4 flex justify-between items-center">
+<div><b>Admin Panel</b> - Firebase LIVE ðŸ”¥<br><span class="text-[11px] text-gray-400">dorshop-bd-5f7ff | 1 sec e sobar kache jabe</span></div>
+<button onclick="closeAdmin()" class="bg-white text-black px-3 py-1 rounded text-sm">Close âœ•</button>
+</div>
+<div class="max-w-[900px] mx-auto p-4">
+<div class="grid grid-cols-3 gap-3 mb-5">
+<div class="bg-orange-50 border border-orange-100 p-3 rounded-lg"><div class="text-[11px] text-gray-500">Total Products (LIVE)</div><div id="statProducts" class="text-[20px] font-bold">0</div></div>
+<div class="bg-blue-50 border border-blue-100 p-3 rounded-lg"><div class="text-[11px] text-gray-500">Pending Orders</div><div id="statOrders" class="text-[20px] font-bold">0</div></div>
+<div class="bg-green-50 border border-green-100 p-3 rounded-lg"><div class="text-[11px] text-gray-500">Total Sales (Confirmed)</div><div id="statSales" class="text-[20px] font-bold">0à§³</div></div>
+</div>
+<div class="flex gap-2 mb-4 border-b overflow-auto">
+<button onclick="switchTab('products')" id="tabBtn-products" class="px-4 py-2 border-b-2 border-[#f85606] font-semibold text-sm whitespace-nowrap">ðŸ“¦ Products Add / Delete - LIVE</button>
+<button onclick="switchTab('orders')" id="tabBtn-orders" class="px-4 py-2 text-sm text-gray-500 whitespace-nowrap">ðŸ›’ Orders - LIVE</button>
+</div>
+<div id="tab-products">
+<h3 class="font-bold mb-3">âž• Product Add - 1 sec e sobar kache LIVE jabe ðŸ”¥</h3>
+<div class="bg-gray-50 p-4 rounded-lg grid gap-3 mb-6 border">
+<input id="pName" placeholder="Product Name: Cotton dress" class="p-2.5 border rounded text-sm">
+<div class="grid grid-cols-2 gap-2">
+<input id="pPrice" type="number" placeholder="Price: 940" class="p-2.5 border rounded text-sm">
+<input id="pSizes" placeholder="Sizes: M,L,XL,XXL" class="p-2.5 border rounded text-sm">
+</div>
+<input id="pBody" placeholder="Body: 38/42/46" class="p-2.5 border rounded text-sm">
+<input id="pImage" placeholder="Photo Link: https://i.ibb.co/..." class="p-2.5 border rounded text-sm">
+<textarea id="pDesc" placeholder="Description" class="p-2.5 border rounded text-sm h-24"></textarea>
+<button onclick="addProduct()" class="bg-[#f85606] text-white py-3 rounded font-bold">ðŸ”¥ LIVE Add Product - 1 sec e sobar kache jabe</button>
+<p class="text-[11px] text-green-600">âœ… Firebase e save hobe - sob customer instant dekhbe!</p>
+</div>
+<h3 class="font-bold mb-2">Existing Products (LIVE from Firebase)</h3>
+<div id="adminProductList" class="space-y-2"></div>
+</div>
+<div id="tab-orders" class="hidden">
+<h3 class="font-bold mb-3">ðŸ“‹ LIVE Orders - Firebase</h3>
+<div id="adminOrderList" class="space-y-3"></div>
+</div>
+</div>
+</div>
+
+<div id="resellerPanel" class="fixed inset-0 bg-white z-[100] overflow-auto hidden">
+<div class="bg-[#00C7B7] text-white p-4 flex justify-between items-center">
+<div><b>Reseller Panel</b> - LIVE ðŸ”¥ Profit 100à§³<br><span class="text-[11px] opacity-80">dorshopbd / resell1234</span></div>
+<button onclick="closeReseller()" class="bg-white text-black px-3 py-1 rounded text-sm">Close âœ•</button>
+</div>
+<div class="max-w-[900px] mx-auto p-4" id="resellerContent"></div>
+</div>
+
+<div id="orderModal" class="fixed inset-0 bg-black/60 z-[90] hidden flex items-center justify-center p-4">
+<div class="bg-white rounded-xl w-full max-w-[420px] overflow-hidden max-h-[90vh] overflow-auto">
+<div class="p-4 border-b flex justify-between items-center bg-gray-50"><b id="modalProductName"></b><button onclick="closeOrder()" class="w-8 h-8 bg-gray-200 rounded-full">âœ•</button></div>
+<div class="p-4 space-y-3">
+<input id="cName" placeholder="Apnar Nam *" class="w-full p-2.5 border rounded text-sm">
+<input id="cPhone" placeholder="Phone Number *" class="w-full p-2.5 border rounded text-sm">
+<textarea id="cAddr" placeholder="Full Address *" class="w-full p-2.5 border rounded text-sm"></textarea>
+<div class="flex gap-2">
+<select id="cSize" class="flex-1 p-2.5 border rounded text-sm"></select>
+<input id="cQty" type="number" value="1" min="1" class="w-20 p-2.5 border rounded text-sm">
+</div>
+<div class="flex gap-2 text-[13px] bg-gray-50 p-2 rounded">
+<label class="flex-1 flex items-center gap-1"><input type="radio" name="del" value="80" checked> Inside Dhaka 80à§³</label>
+<label class="flex-1 flex items-center gap-1"><input type="radio" name="del" value="120"> Outside 120à§³</label>
+</div>
+<div class="bg-orange-50 border border-orange-100 p-3 rounded text-sm">Total: <b id="totalPrice" class="text-[#f85606]">0à§³</b></div>
+<div class="grid grid-cols-2 gap-2">
+<button onclick="submitOrder('Customer')" class="bg-[#f85606] text-white py-3 rounded font-bold text-sm">ðŸ›’ Confirm Order</button>
+<button onclick="submitWhatsApp()" class="bg-[#25D366] text-white py-3 rounded font-bold text-sm">ðŸ’¬ WhatsApp</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="loginModal" class="fixed inset-0 bg-black/60 z-[95] hidden flex items-center justify-center p-4">
+<div class="bg-white rounded-xl w-full max-w-[340px] p-6 text-center">
+<h3 id="loginTitle" class="font-bold mb-3"></h3>
+<input id="loginPass" type="password" placeholder="Password" class="w-full p-2.5 border rounded mb-3 text-sm">
+<button onclick="doLogin()" class="w-full bg-black text-white py-2.5 rounded font-bold">Login</button>
+<button onclick="closeLogin()" class="mt-3 text-sm text-gray-500">Cancel</button>
+<div id="loginError" class="text-red-600 text-[12px] mt-2 hidden">Wrong password!</div>
+</div>
+</div>
+
+<script>
+const defaultProducts=[
+{id:1,name:"Panjabi Combo - Premium",price:1250,sizes:["M","L","XL"],body:"38/42/46",image:"https://i.ibb.co/NdP6bR0Z/Dorshop-20260730-180119-0000.png",description:"Premium Panjabi Combo"},
+{id:2,name:"Shirt Combo - 2026",price:950,sizes:["M","L","XL","XXL"],body:"40/44/48",image:"https://i.ibb.co/NdP6bR0Z/Dorshop-20260730-180119-0000.png",description:"Shirt Combo"},
+{id:3,name:"Watch - Luxury",price:850,sizes:["Free"],body:"One Size",image:"https://i.ibb.co/NdP6bR0Z/Dorshop-20260730-180119-0000.png",description:"Luxury Watch"}
+];
+let products=[...defaultProducts];
+let orders=[];
+let currentProduct=null;
+let loginType='';
+let cart=[];
+
+function save(){localStorage.setItem('dorshop_products',JSON.stringify(products));localStorage.setItem('dorshop_orders',JSON.stringify(orders));}
+function load(){try{const p=localStorage.getItem('dorshop_products');if(p)products=JSON.parse(p);const o=localStorage.getItem('dorshop_orders');if(o)orders=JSON.parse(o);}catch(e){}}
+load();
+
+function renderProducts(list=products){
+document.getElementById('statProducts')&&(document.getElementById('statProducts').innerText=products.length);
+document.getElementById('productGrid').innerHTML=list.map(p=>`<div class="bg-white rounded-lg overflow-hidden border hover:shadow-lg cursor-pointer" onclick="openOrder(${p.id})"><img src="${p.image}" class="w-full h-44 object-cover"><div class="p-2"><div class="font-semibold text-[13px] truncate">${p.name}</div><div class="text-[#f85606] font-bold text-[14px] mt-1">${p.price}à§³</div><div class="text-[10px] text-gray-500">${p.sizes.join(', ')} | ${p.body||''}</div></div></div>`).join('');
+}
+
+function openOrder(id,type='Customer'){
+currentProduct=products.find(p=>p.id==id);
+if(!currentProduct)return;
+document.getElementById('modalProductName').innerText=currentProduct.name;
+document.getElementById('cSize').innerHTML=currentProduct.sizes.map(s=>`<option>${s}</option>`).join('');
+document.getElementById('totalPrice').innerText=currentProduct.price+80+'à§³';
+document.getElementById('orderModal').classList.remove('hidden');
+document.getElementById('cQty').addEventListener('input',calcTotal);
+document.querySelectorAll('input[name=del]').forEach(r=>r.addEventListener('change',calcTotal));
+calcTotal();
+}
+function calcTotal(){if(!currentProduct)return;const qty=parseInt(document.getElementById('cQty').value||1);const del=parseInt(document.querySelector('input[name=del]:checked').value);document.getElementById('totalPrice').innerText=(currentProduct.price*qty+del)+'à§³';}
+function closeOrder(){document.getElementById('orderModal').classList.add('hidden');}
+
+function submitOrder(type){
+const name=document.getElementById('cName').value.trim();
+const phone=document.getElementById('cPhone').value.trim();
+const addr=document.getElementById('cAddr').value.trim();
+if(!name||!phone||!addr){alert('Name, Phone, Address lagbe');return;}
+const qty=parseInt(document.getElementById('cQty').value||1);
+const size=document.getElementById('cSize').value;
+const del=parseInt(document.querySelector('input[name=del]:checked').value);
+const total=currentProduct.price*qty+del;
+const profit=type==='Reseller'?100*qty:0;
+const order={id:Date.now(),product:currentProduct.name,productId:currentProduct.id,customerName:name,phone,address:addr,size,qty,total,status:'Pending',type,profit,date:new Date().toLocaleString()};
+
+// ðŸ”¥ SAVE TO FIREBASE - LIVE
+const {ref,set}=window.fb;
+set(ref(window.db, 'dorshopbd/orders/'+order.id), order);
+
+closeOrder();
+document.getElementById('cName').value='';document.getElementById('cPhone').value='';document.getElementById('cAddr').value='';
+alert('âœ… Order Confirmed! ðŸ”¥ Firebase LIVE - Admin ekhuni dekhbe!');
+}
+
+function submitWhatsApp(){
+if(!currentProduct)return;
+const name=document.getElementById('cName').value||'Customer';
+const phone=document.getElementById('cPhone').value||'';
+const addr=document.getElementById('cAddr').value||'';
+const qty=document.getElementById('cQty').value||1;
+const size=document.getElementById('cSize').value;
+const del=document.querySelector('input[name=del]:checked').value;
+const total=currentProduct.price*qty+parseInt(del);
+let clean=phone.replace(/[^0-9]/g,'');
+if(clean.startsWith('0'))clean='88'+clean;
+const msg=`Hello Dorshop BD!%0AProduct: ${currentProduct.name}%0ASize: ${size}%0AQty: ${qty}%0ATotal: ${total}à§³%0AName: ${name}%0APhone: ${phone}%0AAddress: ${addr}`;
+window.open(`https://wa.me/8801846729152?text=${msg}`,'_blank');
+}
+
+document.getElementById('searchInput').addEventListener('input',(e)=>{
+const v=e.target.value.trim();
+if(v==='dorshopbd786'){loginType='admin';showLogin('Admin Login - dorshopbd786');}
+else if(v==='dorshopbd'){loginType='reseller';showLogin('Reseller Login - dorshopbd');}
+else{const filtered=products.filter(p=>p.name.toLowerCase().includes(v.toLowerCase()));renderProducts(filtered);}
+});
+function showLogin(title){document.getElementById('loginTitle').innerText=title;document.getElementById('loginModal').classList.remove('hidden');document.getElementById('loginError').classList.add('hidden');}
+function closeLogin(){document.getElementById('loginModal').classList.add('hidden');document.getElementById('loginPass').value='';}
+function doLogin(){const pass=document.getElementById('loginPass').value;if(loginType==='admin'&&pass==='dorshopbd2024'){closeLogin();openAdmin();}else if(loginType==='reseller'&&pass==='resell1234'){closeLogin();openReseller();}else{document.getElementById('loginError').classList.remove('hidden');}}
+function openAdmin(){document.getElementById('adminPanel').classList.remove('hidden');renderAdminProducts();renderAdminOrders();}
+function closeAdmin(){document.getElementById('adminPanel').classList.add('hidden');}
+function openReseller(){
+const PROFIT=100;
+const ro=orders.filter(o=>o.type==='Reseller');
+const conf=ro.filter(o=>o.status==='Confirmed');
+const pend=ro.filter(o=>o.status==='Pending');
+const totalBal=conf.reduce((s,o)=>s+(o.profit||PROFIT*(o.qty||1)),0);
+const pendBal=pend.reduce((s,o)=>s+(o.profit||PROFIT*(o.qty||1)),0);
+const div=document.getElementById('resellerContent');
+div.innerHTML=`
+<div class="grid grid-cols-3 gap-2 mb-4">
+  <div class="bg-[#00C7B7] text-white p-3 rounded-xl text-center"><div class="text-[10px] opacity-80">TOTAL BALANCE</div><div class="text-[20px] font-extrabold">${totalBal}à§³</div><div class="text-[9px]">${conf.length} Confirmed</div></div>
+  <div class="bg-orange-400 text-white p-3 rounded-xl text-center"><div class="text-[10px] opacity-80">PENDING</div><div class="text-[20px] font-extrabold">${pendBal}à§³</div><div class="text-[9px]">${pend.length} Pending</div></div>
+  <div class="bg-gray-900 text-white p-3 rounded-xl text-center"><div class="text-[10px] opacity-80">TOTAL ORDERS</div><div class="text-[20px] font-extrabold">${ro.length}</div><div class="text-[9px]">All time</div></div>
+</div>
+<div class="bg-blue-50 border border-blue-200 p-3 rounded-xl text-[11px] mb-4"><b>Balance Details:</b> Confirmed ${conf.length} x 100à§³ = <span class="text-[#00C7B7] font-bold">${totalBal}à§³</span> | Pending ${pend.length} x 100à§³ = <span class="text-orange-500 font-bold">${pendBal}à§³</span><br><span class="text-[10px] text-gray-500">Admin confirm korle balance e add hobe</span></div>
+<h3 class="font-bold mb-2">Products - Resell</h3>
+`+products.map(p=>`<div class="border p-3 rounded flex gap-3 mb-2 bg-white"><img src="${p.image}" class="w-20 h-20 object-cover rounded"><div class="flex-1"><b>${p.name}</b><div class="text-sm mt-1">Customer: ${p.price}à§³ | <span class="text-[#00C7B7] font-bold">Reseller: ${p.price-100}à§³</span> Profit 100à§³</div><div class="text-[11px] text-gray-500">${p.sizes.join(', ')}</div><button onclick="openOrder(${p.id});closeReseller()" class="mt-2 bg-[#00C7B7] text-white px-3 py-1.5 rounded text-xs font-semibold">Order as Reseller - LIVE</button></div></div>`).join('') + `<div class="mt-6"><h3 class="font-bold mb-2">Amar Order + Balance History</h3><div id="resellerOrders" class="space-y-2"></div></div>`;
+document.getElementById('resellerPanel').classList.remove('hidden');
+renderResellerOrders();
+}
+function renderResellerOrders(){
+  const PROFIT=100;
+  const ro=orders.filter(o=>o.type==='Reseller');
+  const el=document.getElementById('resellerOrders');
+  if(!el) return;
+  if(!ro.length){el.innerHTML='<div class="text-center py-6 text-gray-400 text-sm">No orders yet</div>';return;}
+  el.innerHTML=ro.map(o=>{
+    const profit=o.profit||PROFIT*(o.qty||1);
+    return `<div class="border p-3 rounded-xl text-[12px] ${o.status==='Confirmed'?'bg-green-50 border-green-200':'bg-yellow-50 border-yellow-200'}"><div class="flex justify-between"><b>${o.product}</b><span class="text-[10px] px-2 py-0.5 rounded-full ${o.status==='Confirmed'?'bg-green-600 text-white':'bg-orange-400 text-white'}">${o.status}</span></div><div class="mt-1">Customer: ${o.customerName} | Total: ${o.total}à§³ | <b class="text-[#00C7B7]">Profit: ${profit}à§³</b></div><div class="text-[10px] text-gray-500">${o.date} | Qty:${o.qty} Size:${o.size}</div></div>`;
+  }).join('');
+}
+
+function closeReseller(){document.getElementById('resellerPanel').classList.add('hidden');}
+function switchTab(t){document.getElementById('tab-products').classList.toggle('hidden',t!=='products');document.getElementById('tab-orders').classList.toggle('hidden',t!=='orders');document.getElementById('tabBtn-products').className=t==='products'?'px-4 py-2 border-b-2 border-[#f85606] font-semibold text-sm whitespace-nowrap':'px-4 py-2 text-sm text-gray-500 whitespace-nowrap';document.getElementById('tabBtn-orders').className=t==='orders'?'px-4 py-2 border-b-2 border-[#f85606] font-semibold text-sm whitespace-nowrap':'px-4 py-2 text-sm text-gray-500 whitespace-nowrap';}
+
+function addProduct(){
+const name=document.getElementById('pNa
